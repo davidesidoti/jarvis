@@ -2,6 +2,7 @@ import datetime
 import os
 import pyttsx3
 import random
+import re
 import shutil
 import speech_recognition as sr
 import webbrowser
@@ -126,10 +127,25 @@ while True:
     elif 'quanto fa' in query:
         client = wolframalpha.Client('VQL97W-L9G38URH4A')
         query = query.replace('quanto fa ', '')
-        res = client.query(query)
-        answer = next(res.results).text
+        query = translator.translate(query, src='it', dest='en')
+        res = client.query(query.text)
+        if '...' in next(res.results).text:
+            answer = next(res.results).text.replace('...', '')
+        else:
+            answer = next(res.results).text
+        regex = r'^[+-]{0,1}((\d*\.)|\d*)\d+$'
+        if re.match(regex, answer) is not None:
+            answer = round(float(answer), 3)
+            answer = str(answer).replace('.', ',')
+        else:
+            print('NOT NUMBER')
+            answer = translator.translate(answer, src='en', dest='it').text
         print("Il risultato è:  " + answer)
         speak("Il risultato è:  " + answer)
+    elif 'cerca' in query:
+        query = query.replace('cerca', '')
+        query = query.split(' ')
+        webbrowser.open('https://www.google.com/search?q=' + '+'.join(query))
     # USER DATA
     elif 'cambiami il nome' in query or 'cambia il mio nome' in query or 'cambiare il mio nome' in query:
         shutil.rmtree('C:\\Users\\sidot\\AppData\\Roaming\\Jarvis')
