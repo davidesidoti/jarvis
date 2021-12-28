@@ -5,10 +5,13 @@ import random
 import shutil
 import speech_recognition as sr
 import webbrowser
+import wolframalpha
+from googletrans import Translator, constants
 
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[0].id)
+translator = Translator()
 
 
 def speak(audio):
@@ -38,7 +41,7 @@ def username():
         speak(f'Bentornato, {_username}')
         speak("Come posso aiutarti?")
     else:
-        speak("È la prima volta che ci vediamo. Come dovrei chiamarti?")
+        speak("Come dovrei chiamarti?")
         uname = takeCommand()
         os.mkdir('C:\\Users\\sidot\\AppData\\Roaming\\Jarvis')
         _appdatafile = open('C:\\Users\\sidot\\AppData\\Roaming\\Jarvis\\user_data.md', 'a')
@@ -119,6 +122,18 @@ while True:
         os.startfile("E:\\Program Files (x86)\\PhpStorm 2021.3\\bin\\phpstorm64.exe")
         os.startfile("C:\\xampp\\xampp-control.exe")
         os.startfile("C:\\Users\\sidot\\AppData\\Local\\GitHubDesktop\\GitHubDesktop.exe")
+    # GENERAL HELP
+    elif 'quanto fa' in query:
+        client = wolframalpha.Client('VQL97W-L9G38URH4A')
+        query = query.replace('quanto fa ', '')
+        res = client.query(query)
+        answer = next(res.results).text
+        print("Il risultato è:  " + answer)
+        speak("Il risultato è:  " + answer)
+    # USER DATA
+    elif 'cambiami il nome' in query or 'cambia il mio nome' in query or 'cambiare il mio nome' in query:
+        shutil.rmtree('C:\\Users\\sidot\\AppData\\Roaming\\Jarvis')
+        username()
     # ASSISTANT PERSONALITY
     elif 'grazie' in query:
         _thanks = ['Prego!', 'Di niente!', 'Non c\'è di che!', 'Niente!']
@@ -127,3 +142,8 @@ while True:
         speak('Sto bene grazie! Tu come stai?')
     elif 'bene' in query or 'apposto' in query:
         speak('Ne sono felice!')
+    elif 'come ti chiami' in query or 'qual è il tuo nome' in query:
+        _reply = ['Mi chiamo Jarvis', 'Il mio nome è Jarvis', 'I miei amici mi chiamano Jarvis']
+        speak(random.choice(_reply))
+    elif 'chi ti ha creato' in query or 'chi è il tuo creatore' in query or 'chi ti ha fatto' in query or 'chi ti ha programmato' in query:
+        speak('Il mio creatore è quel geniaccio di Davide Sidoti!')
